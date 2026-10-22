@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">UpSkillX logo</title>
+  <desc id="logoDesc">A blue growth arrow above the UpSkillX wordmark.</desc>
+  <defs>
+    <linearGradient id="arrowGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#133772"/>
+      <stop offset="100%" stop-color="#61baf2"/>
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f458a"/>
+      <stop offset="55%" stop-color="#183d7c"/>
+      <stop offset="100%" stop-color="#61baf2"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(175 35)">
+    <path d="M170 230 C245 214 336 155 424 64 L394 50 L472 20 L468 98 L439 73 C361 157 270 223 176 248 Z" fill="url(#arrowGradient)"/>
+    <path d="M172 230 L224 216 L224 278 L172 286 Z" fill="url(#arrowGradient)"/>
+    <path d="M242 206 L294 188 L294 278 L242 278 Z" fill="url(#arrowGradient)"/>
+    <path d="M313 179 L365 148 L365 281 L313 278 Z" fill="url(#arrowGradient)"/>
+    <path d="M384 123 L436 88 L436 292 L384 281 Z" fill="url(#arrowGradient)"/>
+    <path d="M138 320 C236 286 365 284 500 320" fill="none" stroke="#1662b8" stroke-width="4" stroke-linecap="round"/>
+
+    <path d="M226 78 L233 97 L252 104 L233 111 L226 130 L219 111 L200 104 L219 97 Z" fill="#166fd1"/>
+    <path d="M305 52 L310 66 L324 71 L310 76 L305 90 L300 76 L286 71 L300 66 Z" fill="#4ea8eb"/>
+    <path d="M476 159 L482 175 L498 181 L482 187 L476 203 L470 187 L454 181 L470 175 Z" fill="#166fd1"/>
+  </g>
+
+  <text x="450" y="500" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="128" font-style="italic" font-weight="800" fill="url(#textGradient)">UpSkillX</text>
+</svg>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | UpSkillX</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="auth-body">
+    <div class="auth-shell">
+        <section class="auth-showcase">
+            <div class="brand-block">
+                <img src="{{ url_for('static', filename='img/upskillx-logo.svg') }}" alt="UpSkillX logo" class="brand-logo">
+                <div>
+                    <p class="brand-kicker">Career growth workspace</p>
+                    <h1 class="brand-name">UpSkillX</h1>
+                </div>
+            </div>
+
+            <h2 class="auth-title">Return to a clearer career strategy workspace.</h2>
+            <p class="auth-copy">Log in to continue your skill-gap analysis, run practical assessments, and discuss your roadmap with the built-in strategy coach.</p>
+
+            <ul>
+                <li>Compare your current skills against role requirements.</li>
+                <li>Generate coding prompts to benchmark your readiness.</li>
+                <li>Turn gaps into a weekly execution plan.</li>
+            </ul>
+        </section>
+
+        <section class="auth-form-panel">
+            <div class="auth-card">
+                <div>
+                    <p class="eyebrow">Welcome back</p>
+                    <h2 class="section-title">Login</h2>
+                    <p class="section-copy">Enter your username and password to continue.</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash flash-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" class="stack">
+                    <div class="field-group">
+                        <label for="username">Username</label>
+                        <input id="username" type="text" name="username" required minlength="3">
+                    </div>
+
+                    <div class="field-group">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" name="password" required pattern="^(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$">
+                    </div>
+
+                    <div class="auth-link-row">
+                        <button type="submit">Login</button>
+                        <a href="/register" class="button-link button-secondary">Create Account</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

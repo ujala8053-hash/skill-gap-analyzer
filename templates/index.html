@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | UpSkillX{% endblock %}
+
+{% block content %}
+    <div class="dashboard-page">
+        <section class="hero-board">
+            <article class="hero-card hero-editorial-card">
+                <div class="stack">
+                    <div class="hero-badges">
+                        <span class="badge">Strategy coaching</span>
+                        <span class="badge">Skill-gap analysis</span>
+                        <span class="badge">Interview preparation</span>
+                    </div>
+
+                    <div>
+                        <p class="board-kicker">A calmer workspace for career planning</p>
+                        <h2 class="hero-title">Make your next move feel styled, structured, and much less overwhelming.</h2>
+                        <p class="hero-copy">Choose a role, capture the skills you already have, and get grounded coaching before you jump into the assessment. The whole page is arranged to feel more like a curated board than a crowded dashboard.</p>
+                    </div>
+
+                    <div class="hero-actions">
+                        <a href="#planner" class="button-link">Start Your Plan</a>
+                        <a href="#strategy-coach" class="button-link button-secondary">Open Strategy Coach</a>
+                    </div>
+
+                    <div class="hero-stat-row">
+                        <div class="hero-stat">
+                            <span class="hero-stat-label">Role tracks</span>
+                            <strong>{{ roles|length }}</strong>
+                            <p>Compare several career directions before you commit to one.</p>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-label">Coach mode</span>
+                            <strong>Live</strong>
+                            <p>Talk through sequencing, projects, and interview prep instantly.</p>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-label">Planning style</span>
+                            <strong>Practical</strong>
+                            <p>Your advice stays anchored to the role and skills you enter.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <div class="hero-aside-grid">
+                <article class="curation-photo-card curation-photo-card-large">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80" alt="Professionals reviewing ideas together with a laptop open" loading="eager">
+                    <div class="curation-photo-overlay">
+                        <span class="mini-label">Moodboard energy</span>
+                        <h3>Plan with more confidence</h3>
+                        <p>Move from loose career ideas to a clearer roadmap with better visual focus.</p>
+                    </div>
+                </article>
+
+                <article class="curation-note-card">
+                    <span class="mini-label">This workspace helps you</span>
+                    <h3>Think in priorities, not tabs</h3>
+                    <p>Everything here is meant to feel intentional: one role, one honest skill inventory, one focused strategy conversation.</p>
+                    <div class="curation-tags">
+                        <span class="tag">Clearer flow</span>
+                        <span class="tag">Less clutter</span>
+                        <span class="tag">Higher signal</span>
+                    </div>
+                </article>
+
+                <article class="curation-photo-card curation-photo-card-compact">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80" alt="Desk with planning materials and a laptop" loading="lazy">
+                    <div class="curation-photo-overlay compact">
+                        <h3>From reflection to direction</h3>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="flow-ribbon">
+            <article class="flow-card">
+                <span class="flow-step">01</span>
+                <h3>Pick the role you want</h3>
+                <p>Anchor the whole experience to one target so the advice stays clean and relevant.</p>
+            </article>
+            <article class="flow-card">
+                <span class="flow-step">02</span>
+                <h3>List the skills you own</h3>
+                <p>Give the app a realistic baseline so the coach and skill test can respond well.</p>
+            </article>
+            <article class="flow-card">
+                <span class="flow-step">03</span>
+                <h3>Talk, then test</h3>
+                <p>Use the strategy coach first if you want clarity, then validate yourself with the assessment.</p>
+            </article>
+        </section>
+
+        <section class="studio-grid">
+            <article class="form-card planner-card" id="planner">
+                <div class="stack">
+                    <div>
+                        <span class="mini-label">Planning studio</span>
+                        <h2 class="section-title">Build your strategy input</h2>
+                        <p class="section-copy">Start here so the chatbot and skill test work from the same context. Keep it simple and honest, then let the dashboard shape the next step for you.</p>
+                    </div>
+
+                    <form action="/rate_skills" method="POST">
+                        <div class="field-group">
+                            <label for="role">Target Role</label>
+                            <select id="role" name="role" required>
+                                {% for role in roles %}
+                                    <option value="{{ role }}">{{ role }}</option>
+                                {% endfor %}
+                            </select>
+                            <p class="helper-text">Choose the role you want to prepare for next.</p>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="skills">Current Skills</label>
+                            <textarea id="skills" name="skills" placeholder="Python, SQL, Excel, Tableau" required></textarea>
+                            <p class="helper-text">List the tools, languages, and platforms you can already use with some confidence.</p>
+                        </div>
+
+                        <div class="action-row">
+                            <button type="submit">Launch Skill Test</button>
+                            <a href="#strategy-coach" class="button-link button-secondary">Talk Strategy First</a>
+                        </div>
+                    </form>
+                </div>
+            </article>
+
+            <article class="chat-card coach-panel" id="strategy-coach">
+                <div class="stack">
+                    <div>
+                        <span class="mini-label">Strategy corner</span>
+                        <h2 class="section-title">Strategy Coach</h2>
+                        <p class="section-copy">Ask for a roadmap, portfolio direction, or interview plan. The coach uses your selected role and listed skills from the form on this page.</p>
+                    </div>
+
+                    <div class="summary-panel coach-summary">
+                        <div class="summary-item">
+                            <strong>Current role match</strong>
+                            <span id="strategy-match">0%</span>
+                        </div>
+                        <div class="summary-item">
+                            <strong>Priority skills</strong>
+                            <span id="strategy-priority">Add a role and current skills to personalize this</span>
+                        </div>
+                        <div class="summary-item">
+                            <strong>Suggested course</strong>
+                            <span id="strategy-course">Select a target role to unlock a recommendation</span>
+                        </div>
+                    </div>
+
+                    <div class="prompt-list coach-prompts">
+                        {% for prompt in strategy_starters %}
+                            <button type="button" class="prompt-chip" data-strategy-prompt="{{ prompt }}">{{ prompt }}</button>
+                        {% endfor %}
+                    </div>
+
+                    <div class="chat-log" id="strategy-chat-log">
+                        <div class="chat-message assistant">
+                            <div class="chat-meta">Coach</div>
+                            <div>Share your role target, current skills, and the challenge you want help with. I can help you sequence learning, choose portfolio work, or narrow the most important next skills.</div>
+                        </div>
+                    </div>
+
+                    <form id="strategy-chat-form" class="chat-composer">
+                        <div class="field-group">
+                            <label for="strategy-message">Ask about your strategy</label>
+                            <textarea id="strategy-message" placeholder="I want to switch into data science in 3 months. What should I learn first?"></textarea>
+                        </div>
+                        <div class="action-row">
+                            <button type="submit">Send to Coach</button>
+                        </div>
+                        <div id="strategy-chat-status" class="chat-status"></div>
+                    </form>
+                </div>
+            </article>
+        </section>
+
+        <section class="pinboard-section">
+            <div class="pinboard-header">
+                <div>
+                    <span class="mini-label">Pinterest-coded, but useful</span>
+                    <h2 class="section-title">Explore the page like a curated career board</h2>
+                    <p class="section-copy">The cards below keep the layout airy and visual while still pointing you toward real action: pick a direction, talk through the strategy, and then measure your gap.</p>
+                </div>
+            </div>
+
+            <div class="pinboard-grid">
+                <article class="pin-card pin-card-large">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80" alt="Person working at a laptop while reviewing a learning plan" loading="lazy">
+                    <div class="pin-card-overlay">
+                        <span class="mini-label">Weekly rhythm</span>
+                        <h3>Build a stronger routine</h3>
+                        <p>Use the strategy coach when you need help deciding what to learn first, what to build next, or how to prepare for interviews.</p>
+                    </div>
+                </article>
+
+                <article class="pin-card pin-card-accent">
+                    <span class="mini-label">What this dashboard helps you do</span>
+                    <div class="pin-feature-list">
+                        <div>
+                            <strong>Choose your direction</strong>
+                            <p>Compare role paths before committing your time.</p>
+                        </div>
+                        <div>
+                            <strong>Talk through the plan</strong>
+                            <p>Use the built-in coach to sequence learning and projects.</p>
+                        </div>
+                        <div>
+                            <strong>Measure progress</strong>
+                            <p>Turn your answers into a clearer report on strengths and gaps.</p>
+                        </div>
+                    </div>
+                </article>
+
+                {% for role in featured_roles %}
+                    <article class="pin-card role-pin">
+                        <span class="role-chip">Role path</span>
+                        <h3>{{ role }}</h3>
+                        <p>Use the dashboard and skill test flow to understand where you already fit and what still needs work.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Result | UpSkillX{% endblock %}
+
+{% block content %}
+    <section class="metric-grid">
+        <article class="metric-card">
+            <p class="metric-label">Target role</p>
+            <p class="metric-value">{{ role }}</p>
+            <p class="metric-detail">Selected role for the comparison.</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-label">Match</p>
+            <p class="metric-value">{{ match }}%</p>
+            <p class="metric-detail">{{ matched|length }} matched skills against {{ missing|length }} missing ones.</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-label">Skill coverage</p>
+            <p class="metric-value">{{ chart_labels|length }}</p>
+            <p class="metric-detail">Skills included in the comparison radar.</p>
+        </article>
+    </section>
+
+    <section class="chart-card">
+        <div class="stack">
+            <div>
+                <h2 class="section-title">Role fit radar</h2>
+                <p class="section-copy">Visualize how your existing skill list maps against the target role requirements.</p>
+            </div>
+
+            <div class="chart-frame">
+                <div class="chart-wrap">
+                    <svg id="comparisonChart" class="radar-svg" viewBox="0 0 620 620"></svg>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-swatch" style="background:#b91c1c;"></span>
+                        <span>Required Skills</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-swatch" style="background:#0f766e;"></span>
+                        <span>Known Skills</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="two-column-grid">
+        <article class="list-card">
+            <div class="stack">
+                <h2 class="section-title">Matched skills</h2>
+                {% if matched %}
+                    <ul>
+                        {% for skill in matched %}
+                            <li>{{ skill }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">No matched skills found.</div>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="list-card">
+            <div class="stack">
+                <h2 class="section-title">Missing skills</h2>
+                {% if missing %}
+                    <ul>
+                        {% for skill in missing %}
+                            <li>{{ skill }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">No missing skills found.</div>
+                {% endif %}
+            </div>
+        </article>
+    </section>
+
+    <section class="action-row">
+        <a href="/" class="button-link">Back to Dashboard</a>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const labels = {{ chart_labels | tojson }};
+        const matchedSkills = {{ matched | tojson }};
+        const missingSkills = {{ missing | tojson }};
+        const knownSkills = {{ known_skills | tojson }};
+        const svg = document.getElementById("comparisonChart");
+
+        function polarToCartesian(cx, cy, radius, angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
+
+        function createSvgElement(tag, attributes) {
+            const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            Object.entries(attributes).forEach(([key, value]) => {
+                element.setAttribute(key, value);
+            });
+            return element;
+        }
+
+        function drawComparisonChart() {
+            if (!svg || !labels.length) {
+                return;
+            }
+
+            const size = 620;
+            const center = size / 2;
+            const maxRadius = 210;
+            const levels = 5;
+            const angleStep = (Math.PI * 2) / labels.length;
+            const startAngle = -Math.PI / 2;
+
+            svg.innerHTML = "";
+
+            const normalize = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, "");
+            const matchedSet = new Set(matchedSkills.map(normalize));
+            const requiredSet = new Set([...matchedSkills, ...missingSkills].map(normalize));
+            const knownSet = new Set(knownSkills.map(normalize));
+            const userValues = labels.map((skill) => {
+                const key = normalize(skill);
+                if (matchedSet.has(key)) {
+                    return 5;
+                }
+                if (knownSet.has(key)) {
+                    return 3;
+                }
+                return 0;
+            });
+            const requiredValues = labels.map((skill) => requiredSet.has(normalize(skill)) ? 5 : 0);
+
+            for (let level = 1; level <= levels; level += 1) {
+                const radius = (maxRadius * level) / levels;
+                const points = labels.map((_, index) => {
+                    const point = polarToCartesian(center, center, radius, startAngle + index * angleStep);
+                    return `${point.x},${point.y}`;
+                }).join(" ");
+
+                svg.appendChild(createSvgElement("polygon", {
+                    points,
+                    fill: "none",
+                    stroke: "#c9d5d1",
+                    "stroke-width": "1"
+                }));
+            }
+
+            labels.forEach((label, index) => {
+                const angle = startAngle + index * angleStep;
+                const axisEnd = polarToCartesian(center, center, maxRadius, angle);
+                const labelPoint = polarToCartesian(center, center, maxRadius + 34, angle);
+
+                svg.appendChild(createSvgElement("line", {
+                    x1: center,
+                    y1: center,
+                    x2: axisEnd.x,
+                    y2: axisEnd.y,
+                    stroke: "#c9d5d1",
+                    "stroke-width": "1"
+                }));
+
+                const text = createSvgElement("text", {
+                    x: labelPoint.x,
+                    y: labelPoint.y,
+                    "font-size": "12",
+                    "text-anchor": labelPoint.x < center - 10 ? "end" : labelPoint.x > center + 10 ? "start" : "middle",
+                    fill: "#335148"
+                });
+                text.textContent = label;
+                svg.appendChild(text);
+            });
+
+            function addDataset(values, fill, stroke) {
+                const polygonPoints = values.map((value, index) => {
+                    const radius = (maxRadius * value) / levels;
+                    const point = polarToCartesian(center, center, radius, startAngle + index * angleStep);
+                    return `${point.x},${point.y}`;
+                }).join(" ");
+
+                svg.appendChild(createSvgElement("polygon", {
+                    points: polygonPoints,
+                    fill,
+                    stroke,
+                    "stroke-width": "2"
+                }));
+            }
+
+            addDataset(requiredValues, "rgba(185, 28, 28, 0.10)", "#b91c1c");
+            addDataset(userValues, "rgba(15, 118, 110, 0.18)", "#0f766e");
+        }
+
+        drawComparisonChart();
+    </script>
+{% endblock %}

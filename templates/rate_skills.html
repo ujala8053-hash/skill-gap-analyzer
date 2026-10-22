@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Test | UpSkillX{% endblock %}
+
+{% block content %}
+    <section class="hero-grid">
+        <article class="hero-card">
+            <div class="stack">
+                <div class="hero-badges">
+                    <span class="badge">3 prompts per skill</span>
+                    <span class="badge">Concept-based scoring</span>
+                    <span class="badge">Role-specific report</span>
+                </div>
+                <div>
+                    <h2 class="hero-title">Pressure-test the skills you want to claim.</h2>
+                    <p class="hero-copy">Generate short coding tasks for your stack, answer them directly in the browser, and get a report that highlights missing skills, weak areas, and practical next steps.</p>
+                </div>
+            </div>
+        </article>
+
+        <div class="metric-stack">
+            <article class="metric-card">
+                <p class="metric-label">Scoring scale</p>
+                <p class="metric-value">1-5</p>
+                <p class="metric-detail">Beginner, basic, working, strong, and advanced coverage.</p>
+            </article>
+            <article class="metric-card">
+                <p class="metric-label">Assessment mode</p>
+                <p class="metric-value">Local</p>
+                <p class="metric-detail">Answers are reviewed by concept matching and structure, not code execution.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="content-grid">
+        <article class="form-card">
+            <div class="stack">
+                <div>
+                    <h2 class="section-title">Load your assessment</h2>
+                    <p class="section-copy">Choose a target role and the skills you want to rate. Generating the test refreshes the questions below.</p>
+                </div>
+
+                <form action="/rate_skills" method="POST">
+                    <div class="field-group">
+                        <label for="target-role">Target Role</label>
+                        <select id="target-role" name="role" required>
+                            {% for role in roles %}
+                                <option value="{{ role }}" {% if role == selected_role %}selected{% endif %}>{{ role }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="skills-input">Skills To Assess</label>
+                        <textarea id="skills-input" name="skills" placeholder="Python, SQL, Flask">{{ skills_input or "" }}</textarea>
+                        <p class="helper-text">Separate skills with commas so the test generator can create targeted questions.</p>
+                    </div>
+
+                    <div class="action-row">
+                        <button type="submit">Generate Test</button>
+                        <a href="/" class="button-link button-secondary">Back to Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </article>
+
+        <article class="timeline-card">
+            <div class="stack">
+                <div>
+                    <h2 class="section-title">How this works</h2>
+                    <p class="section-copy">The assessment is lightweight on purpose. It helps you see whether you can explain and structure real work in the skill areas you listed.</p>
+                </div>
+
+                <div class="timeline-list">
+                    <div class="timeline-row">
+                        <div class="timeline-day">1. Generate</div>
+                        <p class="timeline-copy">Create role-aware prompts for each selected skill.</p>
+                    </div>
+                    <div class="timeline-row">
+                        <div class="timeline-day">2. Answer</div>
+                        <p class="timeline-copy">Write short code or structured solutions directly in the page.</p>
+                    </div>
+                    <div class="timeline-row">
+                        <div class="timeline-day">3. Review</div>
+                        <p class="timeline-copy">Turn the results into an action plan with weak spots, missing skills, and recommended courses.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="list-card">
+        <div class="stack">
+            <div>
+                <h2 class="section-title">Answer coding questions</h2>
+                <p class="section-copy">Each skill gets three prompts. Keep your answers practical and specific so the report can identify the concepts you covered.</p>
+            </div>
+
+            <form action="/submit_ratings" method="POST" class="stack">
+                <input type="hidden" name="target_role" value="{{ selected_role }}">
+                <textarea name="skills_input" class="hidden">{{ skills_input or "" }}</textarea>
+
+                {% if skills %}
+                    {% for skill in skills %}
+                        <article class="detail-card">
+                            <div class="stack">
+                                <div>
+                                    <h3 class="card-title">{{ skill }}</h3>
+                                    <p class="card-subtitle">Write code, pseudocode, or a structured explanation for each task.</p>
+                                </div>
+
+                                {% for question in questions_by_skill[skill] %}
+                                    <div class="question-card">
+                                        <div>
+                                            <strong>Question {{ loop.index }}: {{ question.title }}</strong>
+                                            <p class="helper-text">{{ question.prompt }}</p>
+                                        </div>
+                                        <div class="field-group">
+                                            <label for="answer-{{ question.id }}">Your answer</label>
+                                            <textarea id="answer-{{ question.id }}" name="answer__{{ question.id }}" placeholder="Write your solution here..." required></textarea>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </article>
+                    {% endfor %}
+
+                    <div class="action-row">
+                        <button type="submit">Analyze Test</button>
+                    </div>
+                {% else %}
+                    <div class="empty-state">No skills loaded yet. Enter a target role and skills above to generate your assessment.</div>
+                {% endif %}
+            </form>
+        </div>
+    </section>
+{% endblock %}

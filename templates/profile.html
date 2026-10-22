@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | UpSkillX{% endblock %}
+
+{% block content %}
+    <section class="hero-grid">
+        <article class="hero-card">
+            <div class="stack">
+                <div class="hero-badges">
+                    <span class="badge">Academic context</span>
+                    <span class="badge">Contact snapshot</span>
+                    <span class="badge">Learner identity</span>
+                </div>
+                <div>
+                    <h2 class="hero-title">Your profile keeps the workspace personal and grounded.</h2>
+                    <p class="hero-copy">This page brings together the details connected to your account so the rest of the product has a stable identity for your planning and progress work.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="metric-card">
+            <p class="metric-label">Current stage</p>
+            <p class="metric-value">{{ profile.year }}</p>
+            <p class="metric-detail">{{ profile.degree }} at {{ profile.college }}</p>
+        </article>
+    </section>
+
+    <section class="list-card">
+        <div class="stack">
+            <div>
+                <h2 class="section-title">Saved details</h2>
+                <p class="section-copy">A clean profile view makes it easier to confirm everything tied to your account at a glance.</p>
+            </div>
+
+            <div class="profile-grid">
+                <article class="data-card">
+                    <p class="data-key">Username</p>
+                    <h3 class="data-label">{{ profile.username }}</h3>
+                </article>
+                <article class="data-card">
+                    <p class="data-key">Email</p>
+                    <h3 class="data-label">{{ profile.email }}</h3>
+                </article>
+                <article class="data-card">
+                    <p class="data-key">Phone</p>
+                    <h3 class="data-label">{{ profile.phone }}</h3>
+                </article>
+                <article class="data-card">
+                    <p class="data-key">Age</p>
+                    <h3 class="data-label">{{ profile.age }}</h3>
+                </article>
+                <article class="data-card">
+                    <p class="data-key">College</p>
+                    <h3 class="data-label">{{ profile.college }}</h3>
+                </article>
+                <article class="data-card">
+                    <p class="data-key">Degree</p>
+                    <h3 class="data-label">{{ profile.degree }}</h3>
+                </article>
+                <article class="data-card">
+                    <p class="data-key">Year</p>
+                    <h3 class="data-label">{{ profile.year }}</h3>
+                </article>
+            </div>
+        </div>
+    </section>
+{% endblock %}

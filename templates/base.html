@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UpSkillX{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <img src="{{ url_for('static', filename='img/upskillx-logo.svg') }}" alt="UpSkillX logo" class="brand-logo">
+                <div>
+                    <p class="brand-kicker">Career growth workspace</p>
+                    <h2 class="brand-name">UpSkillX</h2>
+                </div>
+            </div>
+
+            <div class="user-chip">
+                <span class="user-chip-label">Signed in as</span>
+                <strong>{{ user }}</strong>
+            </div>
+
+            <nav class="nav-links">
+                <a href="/" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+                <a href="/rate_skills" class="{% if active_page == 'skill_test' %}active{% endif %}">Skill Test</a>
+                <a href="/profile" class="{% if active_page == 'profile' %}active{% endif %}">Profile</a>
+                <a href="/logout">Logout</a>
+            </nav>
+
+            <div class="sidebar-note">
+                <p>Measure your skill gap, build a sharper plan, and keep momentum visible.</p>
+            </div>
+        </aside>
+
+        <div class="workspace">
+            <header class="topbar">
+                <div>
+                    {% if page_eyebrow %}
+                        <p class="eyebrow">{{ page_eyebrow }}</p>
+                    {% endif %}
+                    <h1 class="page-title">{{ page_title or "UpSkillX" }}</h1>
+                    {% if page_description %}
+                        <p class="page-description">{{ page_description }}</p>
+                    {% endif %}
+                </div>
+                {% block topbar_actions %}{% endblock %}
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <section class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </section>
+                {% endif %}
+            {% endwith %}
+
+            <main class="page-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

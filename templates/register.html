@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | UpSkillX</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="auth-body">
+    <div class="auth-shell">
+        <section class="auth-showcase">
+            <div class="brand-block">
+                <img src="{{ url_for('static', filename='img/upskillx-logo.svg') }}" alt="UpSkillX logo" class="brand-logo">
+                <div>
+                    <p class="brand-kicker">Career growth workspace</p>
+                    <h1 class="brand-name">UpSkillX</h1>
+                </div>
+            </div>
+
+            <h2 class="auth-title">Create a workspace for focused career progress.</h2>
+            <p class="auth-copy">Register once to keep your role targets, assessment flow, and strategy discussions in one place.</p>
+
+            <ul>
+                <li>Capture your current academic profile and role direction.</li>
+                <li>Measure where you fit today and what skills still need work.</li>
+                <li>Use a guided workflow instead of collecting random learning resources.</li>
+            </ul>
+        </section>
+
+        <section class="auth-form-panel">
+            <div class="auth-card">
+                <div>
+                    <p class="eyebrow">New account</p>
+                    <h2 class="section-title">Register</h2>
+                    <p class="section-copy">Set up your account details to start using the workspace.</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash flash-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" class="stack">
+                    <div class="field-grid">
+                        <div class="field-group">
+                            <label for="username">Username</label>
+                            <input id="username" name="username" required minlength="3">
+                        </div>
+
+                        <div class="field-group">
+                            <label for="email">Email</label>
+                            <input id="email" type="email" name="email" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="phone">Phone</label>
+                            <input id="phone" type="tel" name="phone" pattern="[0-9]{10}" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="age">Age</label>
+                            <input id="age" type="number" name="age" min="16" max="100" required>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" name="password" required pattern="^(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$">
+                        <p class="helper-text">Use at least 6 characters with one number and one special character.</p>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="college">College</label>
+                        <input id="college" name="college" required>
+                    </div>
+
+                    <div class="field-grid">
+                        <div class="field-group">
+                            <label for="degree">Degree</label>
+                            <input id="degree" name="degree" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="year">Year</label>
+                            <select id="year" name="year" required>
+                                <option value="">Select year</option>
+                                <option>1st</option>
+                                <option>2nd</option>
+                                <option>3rd</option>
+                                <option>4th</option>
+                                <option>Final</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="auth-link-row">
+                        <button type="submit">Create Account</button>
+                        <a href="/login" class="button-link button-secondary">Back to Login</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

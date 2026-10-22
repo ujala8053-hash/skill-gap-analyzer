@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Test Report | UpSkillX{% endblock %}
+
+{% block content %}
+    <section class="metric-grid">
+        <article class="metric-card">
+            <p class="metric-label">Target role</p>
+            <p class="metric-value">{{ target_role }}</p>
+            <p class="metric-detail">Role your assessment was measured against.</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-label">Overall score</p>
+            <p class="metric-value">{{ overall_score }}%</p>
+            <p class="metric-detail">{{ answered_questions }}/{{ total_questions }} questions answered across {{ ratings|length }} skills.</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-label">Role match</p>
+            <p class="metric-value">{{ role_match }}%</p>
+            <p class="metric-detail">Alignment between your tested skills and the target role requirements.</p>
+        </article>
+    </section>
+
+    <section class="chart-card">
+        <div class="stack">
+            <div>
+                <h2 class="section-title">Skill radar</h2>
+                <p class="section-copy">Compare the target role expectations with your current tested level across the role skill set.</p>
+            </div>
+
+            <div class="chart-frame">
+                <div class="chart-wrap">
+                    <svg id="radarChart" class="radar-svg" viewBox="0 0 620 620"></svg>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-swatch" style="background:#b91c1c;"></span>
+                        <span>Required Skills</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-swatch" style="background:#0f766e;"></span>
+                        <span>Known Skill Level</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="two-column-grid">
+        <article class="list-card">
+            <div class="stack">
+                <div>
+                    <h2 class="section-title">Your skill levels</h2>
+                    <p class="section-copy">A quick read on how each tested skill performed in the assessment.</p>
+                </div>
+
+                {% for skill, rating in ratings.items() %}
+                    <div class="detail-card">
+                        <strong>{{ skill }}</strong>
+                        <p class="helper-text">{{ rating }}/5</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ (rating / 5 * 100)|round(0, 'floor') }}%;"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="list-card">
+            <div class="stack">
+                <div>
+                    <h2 class="section-title">Skills to improve</h2>
+                    <p class="section-copy">These are the matched skills where your rating suggests more deliberate practice is needed.</p>
+                </div>
+
+                {% if weak_skills %}
+                    <ul>
+                        {% for item in weak_skills %}
+                            <li>{{ item.skill }} - {{ item.rating }}/5</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">No low-rated matched skills were found in this attempt.</div>
+                {% endif %}
+            </div>
+        </article>
+    </section>
+
+    <section class="list-card">
+        <div class="stack">
+            <div>
+                <h2 class="section-title">Answer review</h2>
+                <p class="section-copy">Look at the concepts your responses covered and the ones that still need attention.</p>
+            </div>
+
+            {% for result in skill_results %}
+                <article class="review-card">
+                    <div class="stack">
+                        <div>
+                            <h3 class="card-title">{{ result.skill }}</h3>
+                            <div class="tag-list">
+                                <span class="pill">{{ result.rating_label }} - {{ result.rating }}/5</span>
+                                <span class="pill">Average {{ result.average_score }}%</span>
+                            </div>
+                        </div>
+
+                        {% if result.missing_concepts %}
+                            <p class="helper-text">Focus next on: {{ result.missing_concepts | join(', ') }}</p>
+                        {% else %}
+                            <p class="helper-text">Your answers covered the main concepts for this skill.</p>
+                        {% endif %}
+
+                        {% for question in result.questions %}
+                            <div class="question-card">
+                                <div>
+                                    <strong>{{ question.title }}</strong>
+                                    <p class="helper-text">{{ question.prompt }}</p>
+                                </div>
+                                <p><strong>Score:</strong> {{ question.score }}%</p>
+                                {% if question.matched_keywords %}
+                                    <p><strong>Detected concepts:</strong> {{ question.matched_keywords | join(', ') }}</p>
+                                {% endif %}
+                                {% if question.missing_keywords %}
+                                    <p><strong>Missing concepts:</strong> {{ question.missing_keywords | join(', ') }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="two-column-grid">
+        <article class="list-card">
+            <div class="stack">
+                <h2 class="section-title">Matched skills</h2>
+                {% if matched_skills %}
+                    <ul>
+                        {% for skill in matched_skills %}
+                            <li>{{ skill }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">No matched skills were found.</div>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="list-card">
+            <div class="stack">
+                <h2 class="section-title">Missing skills</h2>
+                {% if missing_skills %}
+                    <ul>
+                        {% for skill in missing_skills %}
+                            <li>{{ skill }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">No missing skills were found.</div>
+                {% endif %}
+            </div>
+        </article>
+    </section>
+
+    <section class="two-column-grid">
+        <article class="list-card">
+            <div class="stack">
+                <h2 class="section-title">Recommended courses</h2>
+                {% if courses %}
+                    <ul>
+                        {% for course in courses %}
+                            <li>{{ course.Course }} ({{ course.Platform }})</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">No course recommendations were found for this role.</div>
+                {% endif %}
+            </div>
+        </article>
+
+        <article class="timeline-card">
+            <div class="stack">
+                <h2 class="section-title">Weekly plan</h2>
+                <div class="timeline-list">
+                    {% for day, tasks in timetable.items() %}
+                        <div class="timeline-row">
+                            <div class="timeline-day">{{ day }}</div>
+                            <p class="timeline-copy">{{ tasks | join(', ') }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="action-row">
+        <a href="/" class="button-link">Back to Dashboard</a>
+        <a href="/rate_skills" class="button-link button-secondary">Take Another Test</a>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const ratings = {{ ratings | tojson }};
+        const requiredSkills = {{ suggested_role_skills | tojson }};
+        const labels = requiredSkills.length ? requiredSkills : Object.keys(ratings);
+        const svg = document.getElementById("radarChart");
+
+        function polarToCartesian(cx, cy, radius, angle) {
+            return {
+                x: cx + radius * Math.cos(angle),
+                y: cy + radius * Math.sin(angle)
+            };
+        }
+
+        function createSvgElement(tag, attributes) {
+            const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            Object.entries(attributes).forEach(([key, value]) => {
+                element.setAttribute(key, value);
+            });
+            return element;
+        }
+
+        function drawRadarChart() {
+            if (!svg || !labels.length) {
+                return;
+            }
+
+            const size = 620;
+            const center = size / 2;
+            const maxRadius = 210;
+            const levels = 5;
+            const angleStep = (Math.PI * 2) / labels.length;
+            const startAngle = -Math.PI / 2;
+
+            svg.innerHTML = "";
+            const normalize = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, "");
+            const ratingMap = Object.fromEntries(
+                Object.entries(ratings).map(([skill, value]) => [normalize(skill), Number(value) || 0])
+            );
+            const requiredValues = labels.map(() => 5);
+            const dataValues = labels.map((skill) => ratingMap[normalize(skill)] || 0);
+
+            for (let level = 1; level <= levels; level += 1) {
+                const radius = (maxRadius * level) / levels;
+                const points = labels.map((_, index) => {
+                    const point = polarToCartesian(center, center, radius, startAngle + index * angleStep);
+                    return `${point.x},${point.y}`;
+                }).join(" ");
+
+                svg.appendChild(createSvgElement("polygon", {
+                    points,
+                    fill: "none",
+                    stroke: "#c9d5d1",
+                    "stroke-width": "1"
+                }));
+            }
+
+            labels.forEach((label, index) => {
+                const angle = startAngle + index * angleStep;
+                const axisEnd = polarToCartesian(center, center, maxRadius, angle);
+                const labelPoint = polarToCartesian(center, center, maxRadius + 34, angle);
+
+                svg.appendChild(createSvgElement("line", {
+                    x1: center,
+                    y1: center,
+                    x2: axisEnd.x,
+                    y2: axisEnd.y,
+                    stroke: "#c9d5d1",
+                    "stroke-width": "1"
+                }));
+
+                const text = createSvgElement("text", {
+                    x: labelPoint.x,
+                    y: labelPoint.y,
+                    "font-size": "12",
+                    "text-anchor": labelPoint.x < center - 10 ? "end" : labelPoint.x > center + 10 ? "start" : "middle",
+                    fill: "#335148"
+                });
+                text.textContent = label;
+                svg.appendChild(text);
+            });
+
+            const requiredPoints = requiredValues.map((value, index) => {
+                const radius = (maxRadius * value) / 5;
+                const point = polarToCartesian(center, center, radius, startAngle + index * angleStep);
+                return `${point.x},${point.y}`;
+            }).join(" ");
+
+            svg.appendChild(createSvgElement("polygon", {
+                points: requiredPoints,
+                fill: "rgba(185, 28, 28, 0.10)",
+                stroke: "#b91c1c",
+                "stroke-width": "2"
+            }));
+
+            const dataPoints = dataValues.map((value, index) => {
+                const safeValue = Math.max(0, Math.min(5, Number(value) || 0));
+                const radius = (maxRadius * safeValue) / 5;
+                const point = polarToCartesian(center, center, radius, startAngle + index * angleStep);
+                return `${point.x},${point.y}`;
+            }).join(" ");
+
+            svg.appendChild(createSvgElement("polygon", {
+                points: dataPoints,
+                fill: "rgba(15, 118, 110, 0.20)",
+                stroke: "#0f766e",
+                "stroke-width": "2"
+            }));
+        }
+
+        drawRadarChart();
+    </script>
+{% endblock %}
